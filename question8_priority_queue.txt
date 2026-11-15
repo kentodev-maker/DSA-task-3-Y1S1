@@ -1,0 +1,89 @@
+#include <stdio.h>
+
+#define SIZE 5
+
+typedef struct {
+    int value;
+    int priority;
+} Item;
+
+Item queue[SIZE];
+int count = 0;
+
+void enqueue(int value, int priority) {
+    int index;
+
+    if (count == SIZE) {
+        printf("Priority queue is full.\n");
+        return;
+    }
+
+    index = count;
+    while (index > 0 && queue[index - 1].priority < priority) {
+        queue[index] = queue[index - 1];
+        index--;
+    }
+    queue[index].value = value;
+    queue[index].priority = priority;
+    count++;
+}
+
+void dequeue(void) {
+    int index;
+
+    if (count == 0) {
+        printf("Priority queue is empty.\n");
+        return;
+    }
+
+    printf("Removed value %d with priority %d.\n", queue[0].value,
+           queue[0].priority);
+    for (index = 1; index < count; index++) {
+        queue[index - 1] = queue[index];
+    }
+    count--;
+}
+
+void display(void) {
+    int index;
+
+    if (count == 0) {
+        printf("Priority queue is empty.\n");
+        return;
+    }
+
+    printf("Value Priority\n");
+    for (index = 0; index < count; index++) {
+        printf("%5d %8d\n", queue[index].value, queue[index].priority);
+    }
+}
+
+int main(void) {
+    int choice;
+    int value;
+    int priority;
+
+    do {
+        printf("\n1. Insert\n2. Remove highest priority\n3. Display\n4. Exit\nChoice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Enter value and priority: ");
+                scanf("%d %d", &value, &priority);
+                enqueue(value, priority);
+                break;
+            case 2:
+                dequeue();
+                break;
+            case 3:
+                display();
+                break;
+            case 4:
+                break;
+            default:
+                printf("Invalid choice.\n");
+        }
+    } while (choice != 4);
+
+    return 0;
+}

@@ -1,0 +1,64 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define SIZE 100
+
+char operators[SIZE];
+int top = -1;
+
+void push(char value) {
+    if (top < SIZE - 1) {
+        operators[++top] = value;
+    }
+}
+
+char pop(void) {
+    return top >= 0 ? operators[top--] : '\0';
+}
+
+char peek(void) {
+    return top >= 0 ? operators[top] : '\0';
+}
+
+int matching(char opening, char closing) {
+    return (opening == '(' && closing == ')') ||
+           (opening == '[' && closing == ']') ||
+           (opening == '{' && closing == '}');
+}
+
+int balanced(const char *expression) {
+    int index;
+    char character;
+
+    top = -1;
+    for (index = 0; expression[index] != '\0'; index++) {
+        character = expression[index];
+        if (character == '(' || character == '[' || character == '{') {
+            push(character);
+        } else if (character == ')' || character == ']' || character == '}') {
+            if (top == -1 || !matching(pop(), character)) {
+                return 0;
+            }
+        }
+    }
+    return top == -1;
+}
+
+int main(void) {
+    char expression[SIZE];
+
+    printf("Enter an expression: ");
+    if (fgets(expression, sizeof(expression), stdin) == NULL) {
+        return 1;
+    }
+
+    if (balanced(expression)) {
+        printf("The brackets are balanced.\n");
+    } else {
+        printf("The brackets are not balanced.\n");
+    }
+
+    return 0;
+}

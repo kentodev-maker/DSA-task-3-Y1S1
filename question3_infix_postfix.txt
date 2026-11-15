@@ -1,0 +1,137 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define SIZE 100
+
+char stack[SIZE];
+int top = -1;
+
+void push(char value) {
+    stack[++top] = value;
+}
+
+char pop(void) {
+    return stack[top--];
+}
+
+char peek(void) {
+    return stack[top];
+}
+
+int precedence(char operator) {
+    if (operator == '^') return 3;
+    if (operator == '*' || operator == '/') return 2;
+    if (operator == '+' || operator == '-') return 1;
+    return 0;
+}
+
+void infix_to_postfix(const char *infix, char *postfix) {
+    int input_index = 0;
+    int output_index = 0;
+    char character;
+
+    top = -1;
+    while ((character = infix[input_index++]) != '\0' && character != '\n') {
+        if (isalnum((unsigned char) character)) {
+            postfix[output_index++] = character;
+        } else if (character == '(') {
+            push(character);
+        } else if (character == ')') {
+            while (top >= 0 && peek() != '(') {
+                postfix[output_index++] = pop();
+            }
+            if (top >= 0) {
+                pop();
+            }
+        } else if (character == '+' || character == '-' || character == '*' ||
+                   character == '/' || character == '^') {
+            while (top >= 0 && peek() != '(' &&
+                   precedence(peek()) >= precedence(character)) {
+                postfix[output_index++] = pop();
+            }
+            push(character);
+        }
+    }
+
+    while (top >= 0) {
+        postfix[output_index++] = pop();
+    }
+    postfix[output_index] = '\0';
+}
+
+typedef struct Node {
+    char value;
+    struct Node *left;
+    struct Node *right;
+} Node;
+
+Node *create_node(char value) {
+    Node *node = malloc(sizeof(Node));
+    if (node == NULL) {
+        exit(EXIT_FAILURE);
+    }
+    node->value = value;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+Node *build_expression_tree(const char *postfix) {
+    Node *nodes[SIZE];
+    int node_top = -1;
+    int index;
+    char character;
+    Node *node;
+
+    for (index = 0; postfix[index] != '\0'; index++) {
+        character = postfix[index];
+        node = create_node(character);
+        if (isalnum((unsigned char) character)) {
+            nodes[++node_top] = node;
+        } else {
+            node->right = nodes[node_top--];
+            node->left = nodes[node_top--];
+            nodes[++node_top] = node;
+        }
+    }
+    return node_top >= 0 ? nodes[node_top] : NULL;
+}
+
+void preorder(Node *root) {
+    if (root != NULL) {
+        printf("%c ", root->value);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+void free_tree(Node *root) {
+    if (root != NULL) {
+        free_tree(root->left);
+        free_tree(root->right);
+        free(root);
+    }
+}
+
+int main(void) {
+    char infix[SIZE];
+    char postfix[SIZE];
+    Node *root;
+
+    printf("Enter an infix expression: ");
+    if (fgets(infix, sizeof(infix), stdin) == NULL) {
+        return 1;
+    }
+
+    infix_to_postfix(infix, postfix);
+    root = build_expression_tree(postfix);
+    printf("Postfix expression: %s\n", postfix);
+    printf("Expression tree preorder: ");
+    preorder(root);
+    printf("\n");
+    free_tree(root);
+
+    return 0;
+}
