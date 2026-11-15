@@ -6,39 +6,28 @@ int queue[SIZE];
 int front = 0;
 int rear = -1;
 
-int is_empty(void) {
-    return rear < front;
-}
-
-int is_full(void) {
-    return rear == SIZE - 1;
-}
-
 void enqueue(int value) {
-    if (is_full()) {
+    if (rear == SIZE - 1) {
         printf("Queue is full.\n");
         return;
     }
     queue[++rear] = value;
-    printf("%d inserted.\n", value);
 }
 
 void dequeue(void) {
-    if (is_empty()) {
+    if (front > rear) {
         printf("Queue is empty.\n");
         return;
     }
-    printf("%d removed.\n", queue[front++]);
+    printf("Removed %d.\n", queue[front++]);
 }
 
 void display(void) {
     int index;
-
-    if (is_empty()) {
+    if (front > rear) {
         printf("Queue is empty.\n");
         return;
     }
-
     printf("Queue: ");
     for (index = front; index <= rear; index++) {
         printf("%d ", queue[index]);
@@ -71,6 +60,5 @@ int main(void) {
                 printf("Invalid choice.\n");
         }
     } while (choice != 4);
-
     return 0;
 }

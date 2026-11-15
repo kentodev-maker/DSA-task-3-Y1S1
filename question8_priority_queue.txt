@@ -1,3 +1,25 @@
+Priority Queue and Its Types
+
+A priority queue is a queue in which each element has a priority. The element
+with the highest priority is removed before elements with lower priorities. If
+two elements have the same priority, they are normally removed in first-in,
+first-out order.
+
+Types of priority queues:
+
+1. Ascending priority queue
+    The element with the smallest priority value is removed first.
+
+2. Descending priority queue
+    The element with the largest priority value is removed first.
+
+Priority queues can be implemented using arrays, linked lists, or heaps. A heap
+usually provides efficient insertion and removal, while an array or linked list
+is easier to implement for small collections.
+
+Applications include CPU scheduling, printer management, hospital triage,
+network routing, event simulation, and graph algorithms such as Dijkstra's
+shortest-path algorithm.
 #include <stdio.h>
 
 #define SIZE 5
